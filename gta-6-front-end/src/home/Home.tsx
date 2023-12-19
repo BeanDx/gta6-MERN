@@ -1,18 +1,34 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import styles from './Home.module.css'
-
-const isSuccess: boolean = false;
+import { useState } from 'react';
 
 interface IFormState {
   name: string
   email: string
 }
-
 function Home() {
   const { register, handleSubmit } = useForm<IFormState>();
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const onSubmit: SubmitHandler<IFormState> = (data) => {
     console.log(data);
+
+    fetch('http://localhost:3000/api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: data.name,
+        email: data.email
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setIsSuccess(data.isSuccess);
+      })
+      .catch(error => console.error('Error:', error));
   }
 
   return (
